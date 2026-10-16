@@ -1,0 +1,50 @@
+services:
+  viaje-db:
+    image: postgres:15-alpine
+    container_name: viaje-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: viaje_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - viaje-network
+
+  viaje-driver-service:
+    build: ./driver-service
+    container_name: viaje-driver-app
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://viaje-db:5432/viaje_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password123
+    depends_on:
+      - viaje-db
+    networks:
+      - viaje-network
+
+  viaje-order-service:
+    build: ./order-service
+    container_name: viaje-order-app
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://viaje-db:5432/viaje_db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: password123
+    depends_on:
+      - viaje-db
+      - viaje-driver-service
+    networks:
+      - viaje-network
+
+volumes:
+  postgres_data:
+
+networks:
+  viaje-network:
+    driver: bridge

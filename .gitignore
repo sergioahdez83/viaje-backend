@@ -1,0 +1,11 @@
+.metadata/
+.idea/
+*.iml
+.DS_Store
+target/
+help.md
+
+# --- Datos de la Base de Datos (Docker) ---
+postgres_data/
+pgdata/
+*.log
